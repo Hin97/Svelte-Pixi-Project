@@ -8,21 +8,256 @@
     let app; // PixiJS Application instance
 
     onMount(() => {
-        // Create a PixiJS Application with a WebGL renderer
+        // Create a PixiJS Application
         app = new PIXI.Application({
             width: 605,
             height: 480,
             background: "#1099bb",
         });
-
-        // Append the PixiJS Application's view (canvas) to your Svelte component
+        // Append the PixiJS Application's view (canvas)
         document.getElementById("pixi-container").appendChild(app.view);
 
-        // Your PixiJS code (e.g., creating sprites, graphics, etc.) goes here
+        // PixiJS code
+
+        const snake = new PIXI.Graphics();
+        const food = new PIXI.Graphics();
+        const snakeSize = 25;
+        const foodSize = 12.5;
+        var foodX;
+        var foodY;
+        const snakeBody = [];
+        var Gameover = true;
+        var direction = "down";
+
+        function setupStage() {
+            // Set up the game border
+            const border = new PIXI.Graphics();
+            border.lineStyle(5, "#000000", 1);
+            border.beginFill("#1099bb");
+            border.drawRect(0, 0, 505, 380);
+            border.endFill();
+
+            // Set up the container for the game
+            const gameContainer = new PIXI.Container();
+            gameContainer.position = { x: 50, y: 50 };
+            gameContainer.width = 505;
+            gameContainer.height = 380;
+
+            // Render everything into the stage
+            gameContainer.addChild(border);
+            app.stage.addChild(gameContainer);
+            gameContainer.addChild(snake);
+            gameContainer.addChild(food);
+        }
+
+        // Store snake body coordinate as an object
+        // Snake body will be record as block number
+        // X have 0-19 block and Y have 0-14 block
+        function storeCoordinate(xVal, yVal, array) {
+            array.push({ x: xVal, y: yVal });
+        }
+
+        function drawFood() {
+            food.clear();
+            foodX = Math.floor(Math.random() * 20);
+            foodY = Math.floor(Math.random() * 15);
+            for (let i = 0; i < snakeBody.length; i++) {
+                if (snakeBody[i].x == foodX && snakeBody[i].y == foodY) {
+                    drawFood();
+                }
+            }
+            food.lineStyle(0);
+            food.beginFill("#00FF00", 1);
+            food.drawStar(14.5 + foodX * 25, 15 + foodY * 25, 4, foodSize);
+            food.endFill();
+        }
+
+        // Draw the snake on the stage
+        function drawSnake() {
+            snake.clear();
+            if (snakeBody.length) {
+                for (let i = 0; i < snakeBody.length; i++) {
+                    if (i == 0) {
+                        snake.beginFill("#8b0000");
+                        snake.drawRoundedRect(2 + snakeBody[i].x * snakeSize, 3 + snakeBody[i].y * snakeSize, snakeSize, snakeSize, 8);
+                        snake.endFill();
+                    } else {
+                        snake.beginFill("#2a2b2a");
+                        snake.drawRoundedRect(2 + snakeBody[i].x * snakeSize, 3 + snakeBody[i].y * snakeSize, snakeSize, snakeSize, 8);
+                        snake.endFill();
+                    }
+                }
+            }
+        }
+
+        // Update the snake position after it moves
+        function updateSnake() {
+            let prevX = snakeBody[0].x;
+            let prevY = snakeBody[0].y;
+            for (let i = 1; i < snakeBody.length; i++) {
+                let tempX = snakeBody[i].x;
+                let tempY = snakeBody[i].y;
+                snakeBody[i].x = prevX;
+                snakeBody[i].y = prevY;
+                prevX = tempX;
+                prevY = tempY;
+            }
+            switch (direction) {
+                case "down":
+                    snakeBody[0].y += 1;
+                    break;
+                case "left":
+                    snakeBody[0].x -= 1;
+                    break;
+                case "right":
+                    snakeBody[0].x += 1;
+                    break;
+                case "up":
+                    snakeBody[0].y -= 1;
+                    break;
+            }
+        }
+
+        // Check whether the snake hits the wall or bites itself or gets the food
+        function checkPosition() {
+            if (snakeBody[0].x < 0 || snakeBody[0].x > 19 || snakeBody[0].y < 0 || snakeBody[0].y > 14) {
+                Gameover = true;
+                direction = "down";
+                food.clear();
+                snakeBody.length = 0;
+                showResult();
+            }
+            for (let i = 1; i < snakeBody.length; i++) {
+                if (snakeBody[0].x == snakeBody[i].x && snakeBody[0].y == snakeBody[i].y) {
+                    Gameover = true;
+                    direction = "down";
+                    snakeBody.length = 0;
+                    food.clear();
+                    showResult();
+                }
+            }
+            if (Gameover == false) {
+                if (snakeBody[0].x == foodX && snakeBody[0].y == foodY) {
+                    storeCoordinate(foodX, foodY, snakeBody);
+                    drawFood();
+                }
+            }
+        }
+
+        // Function to control the direction of the snake movement
+        function onKeyDown(key) {
+            if (Gameover == false) {
+                // W Key is 87 and Up arrow is 38
+                if (key.keyCode === 87 || key.keyCode === 38) {
+                    if (direction !== "down") {
+                        direction = "up";
+                    }
+                }
+                // S Key is 83 and Down arrow is 40
+                if (key.keyCode === 83 || key.keyCode === 40) {
+                    if (direction !== "up") {
+                        direction = "down";
+                    }
+                }
+                // A Key is 65 and Left arrow is 37
+                if (key.keyCode === 65 || key.keyCode === 37) {
+                    if (direction !== "right") {
+                        direction = "left";
+                    }
+                }
+                // D Key is 68 and Right arrow is 39
+                if (key.keyCode === 68 || key.keyCode === 39) {
+                    if (direction !== "left") {
+                        direction = "right";
+                    }
+                }
+            }
+            // Add the 'keydown' event listener to our document
+            document.removeEventListener("keydown", onKeyDown);
+        }
+
+        function hideMenu() {
+            let home = document.getElementById("home");
+            let result = document.getElementById("result");
+            home.style.display = "none";
+            result.style.display = "none";
+        }
+
+        function showResult() {
+            let result = document.getElementById("result");
+            result.style.display = "block";
+        }
+
+        // Start new round of a game
+        function newRound() {
+            Gameover = false;
+            hideMenu();
+            storeCoordinate(10, 4, snakeBody);
+            storeCoordinate(10, 3, snakeBody);
+            storeCoordinate(10, 2, snakeBody);
+            storeCoordinate(10, 1, snakeBody);
+            drawFood();
+        }
+
+        const startBtn = document.getElementById("startBtn");
+        const startAgainBtn = document.getElementById("startAgainBtn");
+        startBtn.addEventListener("click", newRound);
+        startAgainBtn.addEventListener("click", newRound);
+        setupStage();
+        let elapsed = 0.0;
+        app.ticker.add((delta) => {
+            elapsed += Math.round(delta);
+            if (elapsed % 10 == 0 && Gameover == false) {
+                // Add the 'keydown' event listener to our document
+                document.addEventListener("keydown", onKeyDown);
+                updateSnake();
+                checkPosition();
+                drawSnake();
+            }
+        });
     });
 </script>
 
 <div id="pixi-container" />
+<div id="home">
+    <h1>Snake</h1>
+    <button id="startBtn">Play</button>
+</div>
+<div id="result">
+    <h1>Game Over</h1>
+    <button id="startAgainBtn">Play</button>
+</div>
 
 <style>
+    body {
+        padding: 100px 0;
+        margin: auto;
+        width: 621px;
+    }
+
+    canvas {
+        width: 100%;
+        text-align: center;
+    }
+
+    #home {
+        position: absolute;
+        text-align: center;
+        width: 621px;
+        height: 496px;
+    }
+
+    #result {
+        position: absolute;
+        text-align: center;
+        width: 621px;
+        height: 496px;
+        display: none;
+    }
+
+    h1 {
+        padding: 10px;
+        margin-top: 110px;
+        font-size: 2em;
+    }
 </style>
