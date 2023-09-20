@@ -6,71 +6,72 @@
     import { Graphics } from "@pixi/graphics";
     import "@pixi/graphics-extras";
 
-    // Initialise Pixi components
-    let app;
-    let snake;
-    let food;
+    // Initialise variables to used in PIXI
+    let app, snake, food, foodX, foodY;
+    export let title = "Snake";
     const snakeSize = 25;
     const foodSize = 12.5;
-    let foodX;
-    let foodY;
     const snakeBody = [];
     var Gameover = true;
     var direction = "down";
     let elapsed = 0.0;
+    let pressed = false;
 
     onMount(() => {
-        // Create a PixiJS Application
+        // Create a PIXI Application
         app = new PIXI.Application({
-            width: 605,
-            height: 480,
+            width: 509,
+            height: 384,
             background: "#1099bb",
         });
-        // Append the PixiJS Application's view (canvas)
+        // Append the PIXI Application's view (canvas)
         document.getElementById("pixi-container").appendChild(app.view);
 
+        // Initialise PIXI component
         snake = new PIXI.Graphics();
         food = new Graphics();
 
         // Set up the game border
         const border = new PIXI.Graphics();
-        border.lineStyle(5, "#000000", 1);
+        border.lineStyle(3, "#000000", 1);
         border.beginFill("#1099bb");
         border.drawRect(0, 0, 505, 380);
         border.endFill();
 
         // Set up the container for the game
         const gameContainer = new PIXI.Container();
-        gameContainer.position = { x: 50, y: 50 };
+        gameContainer.position = { x: 2, y: 2 };
         gameContainer.width = 505;
         gameContainer.height = 380;
 
-        // Render everything into the stage
+        // Render everything into the stage and container
         gameContainer.addChild(border);
-        app.stage.addChild(gameContainer);
         gameContainer.addChild(snake);
         gameContainer.addChild(food);
+        app.stage.addChild(gameContainer);
 
+        // Run the game at the back
+        // if (!Gameover) {
         app.ticker.add((delta) => {
             elapsed += Math.round(delta);
             if (elapsed % 10 == 0 && Gameover == false) {
-                // Add the 'keydown' event listener to our document
-                document.addEventListener("keydown", onKeyDown);
                 updateSnake();
                 checkPosition();
                 drawSnake();
+                pressed = false;
             }
         });
+        // }
     });
-    // PixiJS code
 
-    // // Store snake body coordinate as an object
-    // // Snake body will be record as block number
-    // // X have 0-19 block and Y have 0-14 block
+    // Store snake body coordinate as an object
+    // Snake body will be record as block number
+    // X have 0-19 block and Y have 0-14 block
     function storeCoordinate(xVal, yVal, array) {
         array.push({ x: xVal, y: yVal });
     }
 
+    // Draw food into the screen at a random place within the game container
     function drawFood() {
         food.clear();
         foodX = Math.floor(Math.random() * 20);
@@ -88,23 +89,17 @@
 
     // Draw the snake on the stage
     function drawSnake() {
-        snake.clear();
-        if (snakeBody.length) {
+        if (snakeBody.length && !Gameover) {
+            snake.clear();
             for (let i = 0; i < snakeBody.length; i++) {
-                if (i == 0) {
-                    snake.beginFill("#8b0000");
-                    snake.drawRoundedRect(2 + snakeBody[i].x * snakeSize, 3 + snakeBody[i].y * snakeSize, snakeSize, snakeSize, 8);
-                    snake.endFill();
-                } else {
-                    snake.beginFill("#2a2b2a");
-                    snake.drawRoundedRect(2 + snakeBody[i].x * snakeSize, 3 + snakeBody[i].y * snakeSize, snakeSize, snakeSize, 8);
-                    snake.endFill();
-                }
+                snake.beginFill("#2a2b2a");
+                snake.drawRoundedRect(2 + snakeBody[i].x * snakeSize, 3 + snakeBody[i].y * snakeSize, snakeSize, snakeSize, 8);
+                snake.endFill();
             }
         }
     }
 
-    // Update the snake position after it moves
+    // Update the snake position based on the direction that it moves
     function updateSnake() {
         let prevX = snakeBody[0].x;
         let prevY = snakeBody[0].y;
@@ -132,21 +127,21 @@
         }
     }
 
+    function resetRound() {
+        direction = "down";
+        food.clear();
+        snakeBody.length = 0;
+    }
+
     // Check whether the snake hits the wall or bites itself or gets the food
     function checkPosition() {
         if (snakeBody[0].x < 0 || snakeBody[0].x > 19 || snakeBody[0].y < 0 || snakeBody[0].y > 14) {
             Gameover = true;
-            direction = "down";
-            food.clear();
-            snakeBody.length = 0;
             showResult();
         }
         for (let i = 1; i < snakeBody.length; i++) {
             if (snakeBody[0].x == snakeBody[i].x && snakeBody[0].y == snakeBody[i].y) {
                 Gameover = true;
-                direction = "down";
-                snakeBody.length = 0;
-                food.clear();
                 showResult();
             }
         }
@@ -158,9 +153,9 @@
         }
     }
 
-    // Function to control the direction of the snake movement
+    // Keyborad listener function to control the direction of the snake move
     function onKeyDown(key) {
-        if (Gameover == false) {
+        if (!Gameover && !pressed) {
             // W Key is 87 and Up arrow is 38
             if (key.keyCode === 87 || key.keyCode === 38) {
                 if (direction !== "down") {
@@ -186,24 +181,26 @@
                 }
             }
         }
-        // Add the 'keydown' event listener to our document
-        document.removeEventListener("keydown", onKeyDown);
+        pressed = true;
     }
 
+    // Hide the menu when the game starts
     function hideMenu() {
-        let home = document.getElementById("home");
-        let result = document.getElementById("result");
-        home.style.display = "none";
-        result.style.display = "none";
+        let menu = document.getElementById("menu");
+        menu.style.display = "none";
     }
 
+    // Show the game over screen
     function showResult() {
-        let result = document.getElementById("result");
-        result.style.display = "block";
+        let menu = document.getElementById("menu");
+        menu.style.background = "rgba(166, 166, 166, 0.7)";
+        menu.style.display = "block";
+        title = "GAMEOVER!";
     }
 
-    // Start new round of a game
+    // Start a new round of the game
     function newRound() {
+        resetRound();
         Gameover = false;
         hideMenu();
         storeCoordinate(10, 4, snakeBody);
@@ -214,32 +211,21 @@
     }
 </script>
 
+<svelte:window on:keydown|preventDefault={onKeyDown} />
 <div id="pixi-container" />
 
-<div id="home">
-    <h1>Snake</h1>
-    <button on:click={newRound}>Play</button>
-</div>
-
-<div id="result">
-    <h1>Game Over</h1>
+<div id="menu">
+    <h1>{title}</h1>
     <button on:click={newRound}>Play</button>
 </div>
 
 <style>
-    #home {
+    #menu {
         position: absolute;
         text-align: center;
-        width: 621px;
-        height: 496px;
-    }
-
-    #result {
-        position: absolute;
-        text-align: center;
-        width: 621px;
-        height: 496px;
-        display: none;
+        width: 509px;
+        margin-bottom: 1px;
+        height: 384px;
     }
 
     h1 {
