@@ -52,7 +52,9 @@
 
         // Run the game at the back
         // if (!Gameover) {
+        app.ticker.maxFPS = 60;
         app.ticker.add((delta) => {
+            console.log(delta);
             elapsed += Math.round(delta);
             if (elapsed % 10 == 0 && Gameover == false) {
                 updateSnake();
