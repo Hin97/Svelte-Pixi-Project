@@ -1,38 +1,40 @@
-# create-svelte
+# Introduction
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+This Svelte project is created by using [SvelteKit](https://kit.svelte.dev/docs/creating-a-project).
 
-## Creating a project
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Run the application
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+If you're trying to run this application on your machine, please clone the repo and run the following codes:
 
 ```bash
+# Install the required packages
+npm install
+
+# Start the server
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
+> Highly recommended to run this application on Google Chrome as it is only tested on Google Chrome
 
-## Building
+## Important packages
 
-To create a production version of your app:
+PixiJS is used in this project for rendering the mini game.
+The version of PixiJS related packages are shown below:
 
 ```bash
-npm run build
+"@pixi/graphics-extras": "^7.3.0",
+"pixi.js": "^7.1.4"
 ```
 
-You can preview the production build with `npm run preview`.
+The version of pixi.js was suppose to be 7.2.4, but I have downgraded to 7.1.4 to resolve a typescript issue. (See the next section for details)
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+## Notes
+
+The project is created with typescript checking enabled, and it has issues when compiling the pixi code (with version 7.2.4):
+It will get following error in the console when moving the mouse within the broswer.
+
+```bash
+Uncaught TypeError: currentTarget.isInteractive is not a function
+```
+
+Did research on this error but seems like pixi with version 7.2.4 is incompatible with typescript.
