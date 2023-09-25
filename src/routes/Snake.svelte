@@ -204,10 +204,10 @@
     function showResult() {
         let menu = document.getElementById("menu");
         if (menu) {
-            menu.style.background = "rgba(166, 166, 166, 0.7)";
-            menu.style.display = "block";
+            menu.style.background = "rgba(166, 166, 166, 0.6)";
+            menu.style.display = "flex";
         }
-        title = "GAMEOVER!";
+        title = "GAME OVER!";
     }
 
     // Start a new round of the game
@@ -228,22 +228,52 @@
 
 <div id="menu">
     <h1>{title}</h1>
-    <button on:click={newRound}>Play</button>
+    <div id="buttonContainer">
+        <button
+            id="startbutton"
+            on:click={newRound}>Play</button
+        >
+    </div>
 </div>
 
 <style>
     #menu {
         position: absolute;
-        text-align: center;
         width: 509px;
-        margin-bottom: 1px;
+        margin-bottom: 4px;
         height: 384px;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        flex-direction: column;
+    }
+
+    #buttonContainer {
+        position: absolute;
+        bottom: 40px;
+    }
+    #startbutton {
+        display: inline-block;
+        background: none;
+        font-family: "Pacifico", sans-serif;
+        font-size: 32px;
+        line-height: 0.8;
+        padding: 10px 6px 20px 6px;
+        border: 0;
+        border-radius: 12px;
+        cursor: pointer;
+    }
+    #startbutton:hover {
+        background-color: black;
+        color: #1099bb;
     }
 
     h1 {
-        padding: 10px;
-        margin-top: 110px;
-        font-size: 2em;
+        font-size: 4em;
         font-family: "Pacifico", sans-serif;
+        white-space: normal;
+        width: 80%;
+        line-height: 80px;
+        color: black;
     }
 </style>
