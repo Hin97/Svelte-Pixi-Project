@@ -244,5 +244,6 @@
         padding: 10px;
         margin-top: 110px;
         font-size: 2em;
+        font-family: "Pacifico", sans-serif;
     }
 </style>

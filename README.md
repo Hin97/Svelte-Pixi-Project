@@ -24,6 +24,7 @@ The version of PixiJS related packages are shown below:
 ```bash
 "@pixi/graphics-extras": "^7.3.0",
 "pixi.js": "^7.2.4"
+"webfontloader": "^1.6.28"
 ```
 
 ## Notes
