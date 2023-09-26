@@ -231,7 +231,7 @@
     <div id="buttonContainer">
         <button
             id="startbutton"
-            on:click={newRound}>Play</button
+            on:click={newRound}>START</button
         >
     </div>
 </div>
@@ -255,10 +255,10 @@
     #startbutton {
         display: inline-block;
         background: none;
-        font-family: "Pacifico", sans-serif;
-        font-size: 32px;
+        font-family: "Press Start 2P", sans-serif;
+        font-size: 20px;
         line-height: 0.8;
-        padding: 10px 6px 20px 6px;
+        padding: 10px 6px 8px 8px;
         border: 0;
         border-radius: 12px;
         cursor: pointer;
@@ -270,9 +270,9 @@
 
     h1 {
         font-size: 4em;
-        font-family: "Pacifico", sans-serif;
+        font-family: "Press Start 2P", sans-serif;
         white-space: normal;
-        width: 80%;
+        width: 100%;
         line-height: 80px;
         color: black;
     }
