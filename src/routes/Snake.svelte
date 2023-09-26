@@ -14,9 +14,17 @@
     const foodSize: number = 12.5; // Size of the food
     const snakeBody: { x: number; y: number }[] = []; // Array that store the coordinates of all snake's body
     let timeoutID: number | undefined;
+    let gapTime: number;
+    let index: number;
+    let currentScore: number = 0;
+    export let bestScore: { easy: number; medium: number; hard: number } = {
+        easy: 0,
+        medium: 0,
+        hard: 0,
+    };
     var Gameover: boolean = true; // Game status
     var direction: string = "down"; // Direction that the snake moves
-    let gapTime: number = 0; // Timer that keeps the game going
+    export let gameMode: string = "";
     let pressed: boolean = false; // Condition that only allow user to press once per frame
 
     // Initialise the components and render to the screen
@@ -93,6 +101,7 @@
             }
         }
         pressed = false;
+
         timeoutID = setTimeout(drawSnake, gapTime);
     }
 
@@ -131,6 +140,7 @@
         snakeBody.length = 0;
         gapTime = 0;
         clearTimeout(timeoutID);
+        currentScore = 0;
     }
 
     // Check whether the snake hits the wall or bites itself or gets the food
@@ -148,8 +158,16 @@
         if (Gameover == false) {
             if (snakeBody[0].x == foodX && snakeBody[0].y == foodY) {
                 storeCoordinate(foodX, foodY, snakeBody);
+                currentScore += 1;
                 drawFood();
             }
+        }
+        if (gameMode === "easy" && currentScore > bestScore.easy) {
+            bestScore.easy += 1;
+        } else if (gameMode === "medium" && currentScore > bestScore.medium) {
+            bestScore.medium += 1;
+        } else if (gameMode === "hard" && currentScore > bestScore.hard) {
+            bestScore.hard += 1;
         }
     }
 
@@ -207,11 +225,17 @@
         resetRound();
         Gameover = false;
         if (level === "easy") {
-            gapTime = 200;
-        } else if (level === "medium") {
+            gameMode = "easy";
             gapTime = 150;
-        } else if (level === "hard") {
+            index = 0;
+        } else if (level === "medium") {
+            gameMode = "medium";
             gapTime = 100;
+            index = 1;
+        } else if (level === "hard") {
+            gameMode = "hard";
+            gapTime = 50;
+            index = 2;
         }
         hideMenu();
         storeCoordinate(10, 4, snakeBody);
@@ -224,23 +248,41 @@
 </script>
 
 <svelte:window on:keydown|preventDefault={onKeyDown} />
-<div id="pixi-container" />
 
-<div id="menu">
-    <h1>{title}</h1>
-    <div id="buttonContainer">
-        <button
-            id="startbutton"
-            on:click={() => newRound("easy")}>EASY</button
-        >
-        <button
-            id="startbutton"
-            on:click={() => newRound("medium")}>MEDIUM</button
-        >
-        <button
-            id="startbutton"
-            on:click={() => newRound("hard")}>HARD</button
-        >
+<div>
+    <div id="pixi-container">
+        <div id="menu">
+            <h1>{title}</h1>
+            <div id="buttonContainer">
+                <button
+                    id="startbutton"
+                    on:click={() => newRound("easy")}>EASY</button
+                >
+                <button
+                    id="startbutton"
+                    on:click={() => newRound("medium")}>MEDIUM</button
+                >
+                <button
+                    id="startbutton"
+                    on:click={() => newRound("hard")}>HARD</button
+                >
+            </div>
+        </div>
+    </div>
+    <div id="bottom-bar">
+        <p id="score">Score: {currentScore}</p>
+        {#if gameMode !== ""}
+            <p id="best">
+                ({gameMode.toUpperCase()}) Best:
+                {#if gameMode == "easy"}
+                    {bestScore.easy}
+                {:else if gameMode === "medium"}
+                    {bestScore.medium}
+                {:else if gameMode === "hard"}
+                    {bestScore.hard}
+                {/if}
+            </p>
+        {/if}
     </div>
 </div>
 
@@ -280,5 +322,9 @@
         font-size: 6em;
         font-family: "VT323", sans-serif;
         color: black;
+    }
+    #bottom-bar {
+        display: flex;
+        justify-content: space-evenly;
     }
 </style>

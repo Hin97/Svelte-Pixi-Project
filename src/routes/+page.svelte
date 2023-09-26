@@ -25,7 +25,9 @@
 </svelte:head>
 
 {#if fontLoaded}
+    <!-- <Snake /> -->
     <Snake />
+    <!-- <Snake /> -->
 {/if}
 
 <style>
