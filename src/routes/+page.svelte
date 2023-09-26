@@ -9,7 +9,7 @@
         const WebFont = await import("webfontloader");
         WebFont.load({
             google: {
-                families: ["Pacifico", "Press Start 2P"],
+                families: ["VT323"],
             },
         });
         fontLoaded = true;

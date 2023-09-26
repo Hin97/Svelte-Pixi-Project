@@ -13,13 +13,14 @@
     const snakeSize: number = 25; // Size of the snake body
     const foodSize: number = 12.5; // Size of the food
     const snakeBody: { x: number; y: number }[] = []; // Array that store the coordinates of all snake's body
+    let timeoutID: number | undefined;
     var Gameover: boolean = true; // Game status
     var direction: string = "down"; // Direction that the snake moves
-    let elapsed: number = 0; // Timer that keeps the game going
+    let gapTime: number = 0; // Timer that keeps the game going
     let pressed: boolean = false; // Condition that only allow user to press once per frame
 
+    // Initialise the components and render to the screen
     onMount(() => {
-        // Create a PIXI Application
         app = new PIXI.Application<HTMLCanvasElement>({
             width: 509,
             height: 384,
@@ -54,20 +55,6 @@
         gameContainer.addChild(snake);
         gameContainer.addChild(food);
         app.stage.addChild(gameContainer);
-
-        // Run the game at the back
-        app.ticker.maxFPS = 60;
-        app.ticker.add((delta) => {
-            elapsed += Math.round(delta);
-            // console.log(delta > 2 ? delta : "");
-            if (elapsed % 10 == 0 && Gameover == false) {
-                updateSnake();
-                checkPosition();
-                drawSnake();
-                pressed = false;
-            }
-        });
-        // }
     });
 
     // Store snake body coordinate as an object
@@ -96,6 +83,8 @@
     // Draw the snake on the stage
     function drawSnake() {
         if (snakeBody.length && !Gameover) {
+            updateSnake();
+            checkPosition();
             snake.clear();
             for (let i = 0; i < snakeBody.length; i++) {
                 snake.beginFill("#2a2b2a");
@@ -103,6 +92,8 @@
                 snake.endFill();
             }
         }
+        pressed = false;
+        timeoutID = setTimeout(drawSnake, gapTime);
     }
 
     // Update the snake position based on the direction that it moves
@@ -138,7 +129,8 @@
         direction = "down";
         food.clear();
         snakeBody.length = 0;
-        elapsed = 0;
+        gapTime = 0;
+        clearTimeout(timeoutID);
     }
 
     // Check whether the snake hits the wall or bites itself or gets the food
@@ -211,15 +203,23 @@
     }
 
     // Start a new round of the game
-    function newRound() {
+    function newRound(level: string) {
         resetRound();
         Gameover = false;
+        if (level === "easy") {
+            gapTime = 200;
+        } else if (level === "medium") {
+            gapTime = 150;
+        } else if (level === "hard") {
+            gapTime = 100;
+        }
         hideMenu();
         storeCoordinate(10, 4, snakeBody);
         storeCoordinate(10, 3, snakeBody);
         storeCoordinate(10, 2, snakeBody);
         storeCoordinate(10, 1, snakeBody);
         drawFood();
+        requestAnimationFrame(drawSnake);
     }
 </script>
 
@@ -231,7 +231,15 @@
     <div id="buttonContainer">
         <button
             id="startbutton"
-            on:click={newRound}>START</button
+            on:click={() => newRound("easy")}>EASY</button
+        >
+        <button
+            id="startbutton"
+            on:click={() => newRound("medium")}>MEDIUM</button
+        >
+        <button
+            id="startbutton"
+            on:click={() => newRound("hard")}>HARD</button
         >
     </div>
 </div>
@@ -255,8 +263,8 @@
     #startbutton {
         display: inline-block;
         background: none;
-        font-family: "Press Start 2P", sans-serif;
-        font-size: 20px;
+        font-family: "VT323", sans-serif;
+        font-size: 36px;
         line-height: 0.8;
         padding: 10px 6px 8px 8px;
         border: 0;
@@ -269,11 +277,8 @@
     }
 
     h1 {
-        font-size: 4em;
-        font-family: "Press Start 2P", sans-serif;
-        white-space: normal;
-        width: 100%;
-        line-height: 80px;
+        font-size: 6em;
+        font-family: "VT323", sans-serif;
         color: black;
     }
 </style>
