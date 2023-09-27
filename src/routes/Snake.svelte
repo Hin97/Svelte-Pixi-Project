@@ -9,25 +9,24 @@
     let food: PIXI.Graphics; // The food (Star)
     let foodX: number; // The x coordinate of the food
     let foodY: number; // The y coordinate of the food
-    export let title: string = "Snake"; // The title that shows in the menu
+    let title: string = "Snake"; // The title that shows in the menu
     const snakeSize: number = 25; // Size of the snake body
     const foodSize: number = 12.5; // Size of the food
     const snakeBody: { x: number; y: number }[] = []; // Array that store the coordinates of all snake's body
-    let timeoutID: number | undefined;
-    let gapTime: number;
-    let index: number;
-    let currentScore: number = 0;
-    export let bestScore: { easy: number; medium: number; hard: number } = {
+    let timeoutID: number | undefined; // The unique number that represent a timeOut event
+    let gapTime: number; // The time that the system take to render the next animate frame
+    let currentScore: number = 0; // The current score
+    let bestScore: { easy: number; medium: number; hard: number } = {
         easy: 0,
         medium: 0,
         hard: 0,
-    };
+    }; // Records the best score for each game mode
     var Gameover: boolean = true; // Game status
     var direction: string = "down"; // Direction that the snake moves
-    export let gameMode: string = "";
+    let gameMode: string = ""; // Three level: easy, medium and hard
     let pressed: boolean = false; // Condition that only allow user to press once per frame
 
-    // Initialise the components and render to the screen
+    // Initialise the components and render to the screen when mounting the webpage
     onMount(() => {
         app = new PIXI.Application<HTMLCanvasElement>({
             width: 509,
@@ -226,16 +225,13 @@
         Gameover = false;
         if (level === "easy") {
             gameMode = "easy";
-            gapTime = 150;
-            index = 0;
+            gapTime = 200;
         } else if (level === "medium") {
             gameMode = "medium";
-            gapTime = 100;
-            index = 1;
+            gapTime = 150;
         } else if (level === "hard") {
             gameMode = "hard";
-            gapTime = 50;
-            index = 2;
+            gapTime = 100;
         }
         hideMenu();
         storeCoordinate(10, 4, snakeBody);
@@ -270,18 +266,22 @@
         </div>
     </div>
     <div id="bottom-bar">
-        <p id="score">Score: {currentScore}</p>
         {#if gameMode !== ""}
+            <p id="score">Score: <b>{currentScore}</b></p>
             <p id="best">
                 ({gameMode.toUpperCase()}) Best:
-                {#if gameMode == "easy"}
-                    {bestScore.easy}
-                {:else if gameMode === "medium"}
-                    {bestScore.medium}
-                {:else if gameMode === "hard"}
-                    {bestScore.hard}
-                {/if}
+                <b>
+                    {#if gameMode == "easy"}
+                        {bestScore.easy}
+                    {:else if gameMode === "medium"}
+                        {bestScore.medium}
+                    {:else if gameMode === "hard"}
+                        {bestScore.hard}
+                    {/if}
+                </b>
             </p>
+        {:else}
+            <p><b>Welcome!</b></p>
         {/if}
     </div>
 </div>
@@ -326,5 +326,9 @@
     #bottom-bar {
         display: flex;
         justify-content: space-evenly;
+    }
+
+    p {
+        font-size: 18px;
     }
 </style>

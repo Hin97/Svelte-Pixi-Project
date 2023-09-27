@@ -11,13 +11,15 @@
             google: {
                 families: ["VT323"],
             },
+            active: () => {
+                fontLoaded = true;
+            },
         });
-        fontLoaded = true;
     });
 </script>
 
 <svelte:head>
-    <title>Snake</title>
+    <title>Snake Game</title>
     <meta
         name="Svelte-Pixi application"
         content="Svelte-Pixi application"
@@ -25,9 +27,9 @@
 </svelte:head>
 
 {#if fontLoaded}
-    <!-- <Snake /> -->
+    <!-- Instruction -->
     <Snake />
-    <!-- <Snake /> -->
+    <!-- Credits -->
 {/if}
 
 <style>
