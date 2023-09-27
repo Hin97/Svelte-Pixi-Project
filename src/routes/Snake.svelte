@@ -245,7 +245,7 @@
 
 <svelte:window on:keydown|preventDefault={onKeyDown} />
 
-<div>
+<div id="sectionContainer">
     <div id="pixi-container">
         <div id="menu">
             <h1>{title}</h1>
@@ -330,5 +330,11 @@
 
     p {
         font-size: 18px;
+    }
+
+    #sectionContainer {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 </style>
