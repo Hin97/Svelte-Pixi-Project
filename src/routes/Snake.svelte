@@ -135,6 +135,8 @@
     // Reset the game components
     function resetRound() {
         direction = "down";
+        title = "";
+        snake.clear();
         food.clear();
         snakeBody.length = 0;
         gapTime = 0;
@@ -212,11 +214,39 @@
     // Show the game over screen
     function showResult() {
         let menu = document.getElementById("menu");
-        if (menu) {
+        let buttons = document.getElementById("buttonContainer");
+        if (menu && buttons) {
             menu.style.background = "rgba(166, 166, 166, 0.6)";
             menu.style.display = "flex";
+            buttons.style.display = "block";
         }
         title = "GAME OVER!";
+    }
+
+    // 3 seconds count down before starting the game
+    function countDown() {
+        let count = 3;
+        let menu = document.getElementById("menu");
+        let buttons = document.getElementById("buttonContainer");
+        if (menu && buttons) {
+            menu.style.display = "flex";
+            menu.style.backgroundColor = "";
+            buttons.style.display = "none";
+            var timer = setInterval(function () {
+                if (count == -1) {
+                    hideMenu();
+                    drawFood();
+                    clearInterval(timer);
+                    requestAnimationFrame(drawSnake);
+                } else if (count == 0) {
+                    title = "GO!";
+                    count -= 1;
+                } else {
+                    title = count.toString();
+                    count -= 1;
+                }
+            }, 500);
+        }
     }
 
     // Start a new round of the game
@@ -234,12 +264,11 @@
             gapTime = 100;
         }
         hideMenu();
+        countDown();
         storeCoordinate(10, 4, snakeBody);
         storeCoordinate(10, 3, snakeBody);
         storeCoordinate(10, 2, snakeBody);
         storeCoordinate(10, 1, snakeBody);
-        drawFood();
-        requestAnimationFrame(drawSnake);
     }
 </script>
 
