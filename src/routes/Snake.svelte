@@ -25,6 +25,8 @@
     var direction: string = "down"; // Direction that the snake moves
     let gameMode: string = ""; // Three level: easy, medium and hard
     let pressed: boolean = false; // Condition that only allow user to press once per frame
+    let menu: HTMLElement | null; // The menu element
+    let buttons: HTMLElement | null; // The three buttons
 
     // Initialise the components and render to the screen when mounting the webpage
     onMount(() => {
@@ -62,6 +64,9 @@
         gameContainer.addChild(snake);
         gameContainer.addChild(food);
         app.stage.addChild(gameContainer);
+
+        menu = document.getElementById("menu");
+        buttons = document.getElementById("buttonContainer");
     });
 
     // Store snake body coordinate as an object
@@ -135,7 +140,7 @@
     // Reset the game components
     function resetRound() {
         direction = "down";
-        title = "";
+        title = "READY";
         snake.clear();
         food.clear();
         snakeBody.length = 0;
@@ -203,18 +208,8 @@
         pressed = true;
     }
 
-    // Hide the menu when the game starts
-    function hideMenu() {
-        let menu = document.getElementById("menu");
-        if (menu) {
-            menu.style.display = "none";
-        }
-    }
-
     // Show the game over screen
     function showResult() {
-        let menu = document.getElementById("menu");
-        let buttons = document.getElementById("buttonContainer");
         if (menu && buttons) {
             menu.style.background = "rgba(166, 166, 166, 0.6)";
             menu.style.display = "flex";
@@ -226,17 +221,14 @@
     // 3 seconds count down before starting the game
     function countDown() {
         let count = 3;
-        let menu = document.getElementById("menu");
-        let buttons = document.getElementById("buttonContainer");
         if (menu && buttons) {
-            menu.style.display = "flex";
             menu.style.backgroundColor = "";
             buttons.style.display = "none";
             var timer = setInterval(function () {
-                if (count == -1) {
-                    hideMenu();
-                    drawFood();
+                if (count == -1 && menu) {
                     clearInterval(timer);
+                    menu.style.display = "none";
+                    drawFood();
                     requestAnimationFrame(drawSnake);
                 } else if (count == 0) {
                     title = "GO!";
@@ -263,7 +255,6 @@
             gameMode = "hard";
             gapTime = 100;
         }
-        hideMenu();
         countDown();
         storeCoordinate(10, 4, snakeBody);
         storeCoordinate(10, 3, snakeBody);

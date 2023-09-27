@@ -49,6 +49,7 @@
         flex: 1;
         display: flex;
         height: 460px;
+        padding: 30px;
         justify-content: center;
     }
 </style>

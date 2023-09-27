@@ -7,19 +7,28 @@
 <div id="sectionContainer">
     <h1>Credits</h1>
     <div id="logoContainer">
-        <a href="https://kit.svelte.dev">
+        <a
+            href="https://kit.svelte.dev"
+            target="_blank"
+        >
             <img
                 src={svelte}
                 alt="SvelteKit"
             />
         </a>
-        <a href="https://pixijs.com/">
+        <a
+            href="https://pixijs.com/"
+            target="_blank"
+        >
             <img
                 src={pixi}
                 alt="pixiJS"
             />
         </a>
-        <a href="https://github.com/Hin97?tab=repositories">
+        <a
+            href="https://github.com/Hin97?tab=repositories"
+            target="_blank"
+        >
             <img
                 src={github}
                 alt="Github"
@@ -33,14 +42,16 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        width: 100%;
     }
     img {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
     }
     #logoContainer {
         display: flex;
-        width: auto;
+        width: 50%;
+        justify-content: space-between;
         flex-direction: row;
         padding: 30px;
     }
