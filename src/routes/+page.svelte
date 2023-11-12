@@ -4,11 +4,11 @@
     import { onMount } from "svelte";
     import Instruction from "./Instruction.svelte";
     import Credits from "./Credits.svelte";
+    import WebFont from "webfontloader";
 
     // Use webfontloader to load external fonts and render screen only if the font is loaded
     let fontLoaded = false;
     onMount(async () => {
-        const WebFont = await import("webfontloader");
         WebFont.load({
             google: {
                 families: ["VT323", "Pacifico"],
@@ -33,6 +33,10 @@
         <div id="section"><Instruction /></div>
         <div id="section"><Snake /></div>
         <div id="section"><Credits /></div>
+    </div>
+{:else}
+    <div id="main-container">
+        <div id="section">Loading</div>
     </div>
 {/if}
 
